@@ -10,6 +10,7 @@ const Edit = () => {
     name: '',
     price: '',
     stock: '',
+    status: null,
   });
   useEffect(() => {
     axios.get(`http://localhost:3000/api/v2/product/${itemId}`)
@@ -25,10 +26,11 @@ const Edit = () => {
     const { name, value } = e.target;
     setItem({ ...item, [name]: value });
   };
+  
   const handleSave = (e) => {
     e.preventDefault()
     // Send a PUT request to update the item
-    axios.put(`http://localhost:3000/api/v2/product/${itemId}`, item)
+    axios.patch(`http://localhost:3000/api/v2/product/${itemId}`, item)
       .then(() => {
         // Redirect to the item detail page after successful update
         history.push(`/`);
