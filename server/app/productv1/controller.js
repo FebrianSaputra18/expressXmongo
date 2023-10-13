@@ -58,22 +58,24 @@ const update = async (req, res) => {
     price: req.body.price,
     stock: req.body.stock,
     status: req.body.status,
-  }
+  };
 
   try {
-    const result = await db.collection('products').updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+    const result = await db
+      .collection("products")
+      .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
 
     if (result.nModified === 0) {
       // If no documents were modified, it means the document with the given ID doesn't exist
-      return res.status(404).send('Item not found');
+      return res.status(404).send("Item not found");
     }
 
-    res.send('Item updated successfully');
+    res.send("Item updated successfully");
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
-}
+};
 
 module.exports = {
   index,

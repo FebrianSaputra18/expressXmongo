@@ -1,7 +1,7 @@
 const Products = require("./model");
 const fs = require("fs");
-const { ObjectId } = require("mongodb");
 const path = require("path");
+const { ObjectId } = require("mongodb");
 
 const index = (req, res) => {
   Products.find()
@@ -46,42 +46,64 @@ const destroy = async (req, res) => {
   res.json({ success: id });
 };
 
-const update = async (req, res) => {
-  const { id } = req.params;
-  const { name, price, stock } = req.body;
-  const image = req.file;
-
-  if (image) {
-    const target = path.join(__dirname, "../../uploads", image.originalname);
-    fs.renameSync(image.path, target);
-    await Products.updateOne({ _id: id }, { $set: { name, price, stock, image_url: `http://localhost:3000/gambar/${image.originalname}` } })
-      .then((result) => res.send(result))
-      .catch((error) => console.log(error));
-  }
-};
-
-// const update = async (req, res) => {
-//   console.log(req);
-//   const { productId } = req.params;
+// const up = async (req, res) => {
+//   const { id } = req.params;
+//   const updateData = {
+//     name: req.body.name,
+//     price: req.body.price,
+//     stock: req.body.stock,
+//   };
+//   // const image = req.file;
 
 //   try {
-//     const results = await Products.findOneAndUpdate(
-//       { _id: productId },
+//     const results = await Products.findByIdAndUpdate(
+//       { _id: new ObjectId(id) },
 //       {
-//         name: req.body.name,
-//         price: req.body.price,
-//         stock: req.body.stock,
-//         status: req.body.status,
+//         $set: {
+//           updateData,
+//         },
 //       },
-//       {new: true}
+//       { new: true }
 //     );
-//     res.send(results);
-//     console.log(req.body, "new update body");
+//     if (results.nModified === 0) {
+//       return results.status(404).send("Not Found");
+//     }
+//     res.send("Item updated successfully");
+//     console.log(updateData, "updated");
+//     console.log(results, "item updated");
 //   } catch (error) {
-//     console.log(error, "eroorrrr");
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
 //   }
+
+//   // if (image) {
+//   //   const target = path.join(
+//   //     __dirname,
+//   //     "../../uploads/mongoose",
+//   //     image.originalname
+//   //   );
+//   //   fs.renameSync(image.path, target);
+//   // }
 // };
 
+const update = async (req, res) => {
+  try {
+    const { body } = req;
+    const { id } = req.params;
+    if (!id) return res.json({ message: "id required" });
+    const findEdit = await Products.findByIdAndUpdate(id, 
+    {
+      ...body,
+    },
+    {
+      new: true
+    }
+    )
+    res.json({
+      data: findEdit
+    })
+  } catch (error) {}
+};
 module.exports = {
   index,
   store,
